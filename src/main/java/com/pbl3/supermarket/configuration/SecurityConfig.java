@@ -17,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.lang.NonNull;
 
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -28,43 +29,38 @@ public class SecurityConfig {
     private final String[] ADMIN_GET_ENDPOINTS = {"/customer", "/product/all"};
     private final String[] ADMIN_DELETE_ENDPOINTS = {"/customer/{customerID}", "/product/{productID}"};
 
-    @Autowired
-    private CustomDecoder customDecoder;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    private CustomDecoder customDecoder;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .cors(cors -> {}) // ✅ Bật CORS trong Security
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ Cho phép OPTIONS để xử lý CORS
-                .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.POST, ADMIN_POST_ENDPOINTS).hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, ADMIN_GET_ENDPOINTS).hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, ADMIN_DELETE_ENDPOINTS).hasRole("ADMIN")
-                .anyRequest().permitAll()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwtConfigurer -> jwtConfigurer
-                    .decoder(customDecoder)
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                )
-            );
-
+        http.authorizeHttpRequests(request ->
+                request.requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.POST, ADMIN_POST_ENDPOINTS).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, ADMIN_GET_ENDPOINTS).hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, ADMIN_DELETE_ENDPOINTS).hasRole("ADMIN")
+                        .anyRequest().permitAll()
+        );
+        http.oauth2ResourceServer(oauth2 ->
+                oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(customDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+        );
+        http.csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 
     @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
+
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
-
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
@@ -77,15 +73,14 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins(
-                            "http://localhost:5173", // ✅ Localhost Vite
-                            "https://your-production-frontend.com" // ✅ Thay bằng domain thật của bạn
-                        )
+                        .allowedOrigins("http://localhost:5173") // Chấp nhận tất cả domain
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .allowCredentials(true) // Nếu dùng token/cookie
-                        .maxAge(3600);
+                        // .allowCredentials(true) // Cho phép gửi token, cookie
+                        .maxAge(3600); // Cache CORS 1 giờ
             }
         };
     }
+
+
 }
