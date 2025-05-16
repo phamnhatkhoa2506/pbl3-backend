@@ -8,8 +8,8 @@ jwt:
 spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/supermarket}
-    username: ${DBMS_USERNAME:root}
-    password: ${DBMS_PASSWORD:root}
+    username: "root"
+    password: "vonuhuyentran1202"
     driver-class-name: "com.mysql.cj.jdbc.Driver"
   jpa:
     hibernate:

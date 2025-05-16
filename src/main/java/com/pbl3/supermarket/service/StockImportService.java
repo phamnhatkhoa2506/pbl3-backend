@@ -1,7 +1,6 @@
 package com.pbl3.supermarket.service;
 
 import com.pbl3.supermarket.dto.request.StockImportRequest;
-import com.pbl3.supermarket.dto.response.ProductResponse;
 import com.pbl3.supermarket.dto.response.StockImportResponse;
 import com.pbl3.supermarket.entity.Product;
 import com.pbl3.supermarket.entity.StockImport;

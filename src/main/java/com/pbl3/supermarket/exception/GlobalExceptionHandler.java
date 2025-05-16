@@ -15,6 +15,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<String> handlingMethodArgumentNotValidException(MethodArgumentNotValidException exception){
-        return ResponseEntity.badRequest().body(exception.getFieldError().getDefaultMessage());
+        // Check if there are any field errors
+        if (exception.getBindingResult() != null && !exception.getBindingResult().getFieldErrors().isEmpty()) {
+            // Retrieve the first field error message or you can customize it
+            return ResponseEntity.badRequest().body(exception.getBindingResult().getFieldErrors().get(0).getDefaultMessage());
+        } else {
+            return ResponseEntity.badRequest().body("Invalid argument, but no specific error message available.");
+        }
     }
 }

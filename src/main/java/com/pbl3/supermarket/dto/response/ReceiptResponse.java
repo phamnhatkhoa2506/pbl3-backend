@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 @Data
@@ -19,4 +20,7 @@ public class ReceiptResponse {
     LocalTime time;
     CustomerResponse customerResponse;
 
+    public LocalDateTime getDateTime() {
+        return LocalDateTime.of(date, time);
+    }
 }

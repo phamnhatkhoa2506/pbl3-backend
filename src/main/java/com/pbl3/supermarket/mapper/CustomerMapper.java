@@ -1,6 +1,5 @@
 package com.pbl3.supermarket.mapper;
 
-import com.pbl3.supermarket.dto.request.CustomerRequest.CustomerCreationRequest;
 import com.pbl3.supermarket.dto.response.CustomerResponse;
 import com.pbl3.supermarket.entity.Customer;
 import org.mapstruct.Mapper;

@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Time;
-import java.util.Date;
+
 
 @Entity
 @NoArgsConstructor

@@ -20,6 +20,7 @@ import java.util.List;
 public class CustomerController {
     @Autowired
     CustomerService customerService;
+    
     @Autowired
     private CartService cartService;
 
@@ -46,9 +47,10 @@ public class CustomerController {
                 .result(customerService.getAllCustomer())
                 .build();
     }
+    
     @DeleteMapping("/{customerID}")
-    ApiResponse<CustomerResponse> deleteCustomer(@PathVariable("customerID") String customerID){
-        return ApiResponse.<CustomerResponse>builder()
+    ApiResponse<Boolean> deleteCustomer(@PathVariable("customerID") String customerID){
+        return ApiResponse.<Boolean>builder()
                 .message("[OK] Deleted a customer")
                 .result(customerService.deleteCustomerById(customerID))
                 .build();
@@ -58,7 +60,15 @@ public class CustomerController {
     ApiResponse<CustomerResponse> updateCustomer(@PathVariable("customerId") String customerID, @Valid @RequestBody CustomerUpdateRequest request){
         return ApiResponse.<CustomerResponse>builder()
                 .message("[OK] Updated a customer")
-                .result(customerService.updateCustomer(customerID, request))
+                .result(customerService.updateCustomer(request))
+                .build();
+    }
+
+    @PatchMapping("/pass")
+    ApiResponse<Boolean> updatePassword(@Valid @RequestBody CustomerUpdateRequest request) {
+        return ApiResponse.<Boolean>builder()
+                .message("[OK] Updated a customer's password")
+                .result(customerService.updatePassword(request))
                 .build();
     }
 
@@ -70,6 +80,7 @@ public class CustomerController {
                 .result(customerService.getMyInfo())
                 .build();
     }
+
     @GetMapping("/myCart")
     ApiResponse<List<CartItemResponse>> getMyCart()
     {
@@ -79,19 +90,48 @@ public class CustomerController {
                 .build();
 
     }
+
+    @GetMapping("/myCart/size")
+    ApiResponse<Integer> getMyCartSize(){
+        return ApiResponse.<Integer>builder()
+                .message("[OK] Get My Cart Size")
+                .result(customerService.getNumberOfProductInCart())
+                .build();
+    }
+
     @PostMapping("/addToCart")
-    ApiResponse<Boolean> addToCart(@RequestBody  AddProductToCartRequest request){ //String productId, int quantity
+    ApiResponse<Boolean> addToCart(@RequestBody AddProductToCartRequest request){ //String productId, int quantity
         return ApiResponse.<Boolean>builder()
                 .message("[OK] Add product to a cart")
                 .result(cartService.addToCart(request))
                 .build();
     }
+
+    @PostMapping("/removeFromCart")
+    ApiResponse<Boolean> removeFromCart(@RequestBody AddProductToCartRequest request ){
+        String productId = request.getProductId();
+        int quantity = request.getQuantity();
+
+        return ApiResponse.<Boolean>builder()
+                .message("[OK] Removed" + productId + " from Cart")
+                .result(cartService.removeFromCart(productId, quantity))
+                .build();
+    }
+
     @PostMapping("/order")
     ApiResponse<ReceiptResponse> order()
     {
         return ApiResponse.<ReceiptResponse>builder()
                 .message("[OK] Ordered, remove all thing about cart")
                 .result(customerService.order())
+                .build();
+    }
+
+    @GetMapping("/order")
+    ApiResponse<List<ReceiptResponse>> getOrderHistory(){
+        return ApiResponse.<List<ReceiptResponse>>builder()
+                .message("[OK] Get Order History")
+                .result(customerService.getOrderHistory())
                 .build();
     }
 }

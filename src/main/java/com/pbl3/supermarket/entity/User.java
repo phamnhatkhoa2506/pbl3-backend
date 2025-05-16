@@ -4,8 +4,6 @@ import com.pbl3.supermarket.enums.ROLES;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.validator.constraints.UniqueElements;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -24,8 +22,7 @@ public class User {
     String id;
 
     @Column(unique = true, nullable = false)
-    @UniqueElements
-    String username;
+    String username;  // Removed @UniqueElements, @Column(unique = true) is sufficient
     String password;
 
     @ElementCollection(targetClass = ROLES.class, fetch = FetchType.EAGER)

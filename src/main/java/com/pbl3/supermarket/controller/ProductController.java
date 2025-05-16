@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/product")
@@ -23,6 +24,7 @@ public class ProductController {
                 .result(productService.createProduct(request))
                 .build();
     }
+
     @GetMapping("/all")
     public ApiResponse<List<ProductResponse>> getAllProducts() {
         return ApiResponse.<List<ProductResponse>>builder()
@@ -30,13 +32,15 @@ public class ProductController {
                 .result(productService.getAllProducts())
                 .build();
     }
-    @GetMapping("/{productID}")
+
+    @GetMapping("/id/{productID}")
     public ApiResponse<ProductResponse> getProduct(@PathVariable("productID") String productId) {
         return ApiResponse.<ProductResponse>builder()
                 .message("[OK] Get Product by Id")
                 .result(productService.getProductById(productId))
                 .build();
     }
+
     @DeleteMapping("/{productID}")
     public ApiResponse<Boolean> deleteProduct(@PathVariable("productID") String productId) {
         return ApiResponse.<Boolean>builder()
@@ -44,18 +48,29 @@ public class ProductController {
                 .result(productService.deleteProductById(productId))
                 .build();
     }
-    @GetMapping("/search/{keySearch}")
-    public ApiResponse<List<ProductResponse>> getProductsByKeySearch(@PathVariable("keySearch") String keySearch) {
+
+    @GetMapping("/search")
+    public ApiResponse<List<ProductResponse>> getProductsByKeySearch(@RequestParam("key") String key) {
         return ApiResponse.<List<ProductResponse>>builder()
-                .message("[OK] Get Products by Key Search: " + keySearch)
-                .result(productService.searchProducts(keySearch))
+                .message("[OK] Get Products by Key Search: " + key)
+                .result(productService.searchProducts(key))
                 .build();
     }
-    @GetMapping("/searchByCategories")
+
+    @PostMapping("/searchByCategories")
     public ApiResponse<List<ProductResponse>> getProductsByCategories(@RequestBody SearchProductByCategoriesRequest request) {
         return ApiResponse.<List<ProductResponse>>builder()
                 .message("[OK] Get Products by Categories")
                 .result(productService.searchProductsByCategories(request))
+                .build();
+    }
+
+    @GetMapping("/ByCategories")
+    public ApiResponse<Map<String, List<ProductResponse> >> getAllProductByCategories()
+    {
+        return ApiResponse.<Map<String, List<ProductResponse>> >builder()
+                .message("[OK] Get All Product By Categories")
+                .result(productService.getALlProductByCategories())
                 .build();
     }
 }

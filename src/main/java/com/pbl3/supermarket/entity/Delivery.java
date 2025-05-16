@@ -21,5 +21,6 @@ public class Delivery {
     @JoinColumn(name = "staff_id")
     Staff staff;
 
+    @Builder.Default
     String status = Status.PROCESSING.message;
 }

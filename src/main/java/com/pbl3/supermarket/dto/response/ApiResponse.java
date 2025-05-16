@@ -3,7 +3,7 @@ package com.pbl3.supermarket.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.boot.context.properties.bind.DefaultValue;
+
 
 @Data
 @NoArgsConstructor
